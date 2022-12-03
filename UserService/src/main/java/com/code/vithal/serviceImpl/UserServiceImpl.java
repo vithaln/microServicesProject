@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +15,8 @@ import com.code.vithal.entity.Hotel;
 import com.code.vithal.entity.Rating;
 import com.code.vithal.entity.User;
 import com.code.vithal.exception.ResourcenotFoundException;
+import com.code.vithal.extranalConfig.HotelService;
+import com.code.vithal.extranalConfig.RatingService;
 import com.code.vithal.repository.UserRepository;
 import com.code.vithal.services.UserService;
 
@@ -29,6 +30,11 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	@Autowired
+	private HotelService hotelService;
+	
+	@Autowired
+	private RatingService ratingService;
 	@Autowired
 	private UserRepository repository;
 
@@ -57,20 +63,32 @@ public class UserServiceImpl implements UserService {
 		// ArrayList<Rating> ratingsOfUsers =
 		// restTemplate.getForObject("http://localhost:8083/ratings/user/bb0e7bd3-3072-44f9-9111-306036bd1147",
 		// ArrayList.class);
+		//By using RestTemplate
+		
 		Rating[] rating = restTemplate.getForObject(BASIC_URL + user.getUserId(), Rating[].class);
 
+		//by using fiegnClient
+		//Rating ratings = ratingService.getRatings(user.getUserId());
+		
+		
+		
+		
 		List<Rating> ratingss = Arrays.stream(rating).toList();
 		log.info("USER-->> {}", ratingss);
 
 		// set the hotel to Rating service and return Rating..
 		List<Rating> ratingList = ratingss.stream().map(ratingg -> {
+			
 			// api to call get hotel from Hotel Service
-			ResponseEntity<Hotel> forEntity = restTemplate.getForEntity(HOTELBASIC_URL + ratingg.getHotelId(),
-					Hotel.class);
+			//By using RestTemplate
+			
+			//ResponseEntity<Hotel> forEntity = restTemplate.getForEntity(HOTELBASIC_URL + ratingg.getHotelId(),Hotel.class);
 
-			log.info("Response Status {} ", forEntity.getStatusCode());
-			Hotel hotel = forEntity.getBody();
+		//	log.info("Response Status {} ", forEntity.getStatusCode());
+			//Hotel hotel = forEntity.getBody();
 
+			//feignClients
+			Hotel hotel = hotelService.getHotels(ratingg.getHotelId());
 			ratingg.setHotel(hotel);
 
 			return ratingg;
