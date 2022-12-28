@@ -3,6 +3,7 @@ package com.code.vithal.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.code.vithal.entity.User;
 import com.code.vithal.services.UserService;
 
+import ch.qos.logback.classic.Logger;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 
 	@Autowired
@@ -33,10 +39,21 @@ public class UserController {
 	}
 	
 	@GetMapping("{userId}")
+	@CircuitBreaker(name = "ratingHotelBreaker",fallbackMethod = "ratingHotelFallback")
 	public ResponseEntity<User> getUserById(@PathVariable String userId){
 		User userById = service.getUserById(userId);
 		
 		return ResponseEntity.ok(userById);
+	}
+	
+	//creating fallback method for circuit breaker
+	
+	public ResponseEntity<User> ratingHotelFallback(String userId, Exception ex){
+		
+		log.info("FallBack method is excuted because of some service are down : ",ex.getMessage());
+		User user = User.builder().email("dummy123@gmail.com").name("Dummy")
+				.userId("123").about("this is dummy user because of some services are down so dummy user data is diplayed...").build();
+		return ResponseEntity.ok(user);
 	}
 	@GetMapping
 	public ResponseEntity<List<User>> getAllusers(){
