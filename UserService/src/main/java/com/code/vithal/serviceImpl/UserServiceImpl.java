@@ -101,7 +101,8 @@ log.info("final List--> {}",ratingList);
 
 	@Override
 	public String deleteUserByid(String userId) {
-
+		User userid = repository.findById(userId)
+				.orElseThrow(() -> new ResourcenotFoundException("this " + userId + " is not present to delete"));
 		repository.deleteById(userId);
 		return "User has been deleted this " + userId;
 	}

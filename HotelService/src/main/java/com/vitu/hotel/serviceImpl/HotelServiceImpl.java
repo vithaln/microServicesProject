@@ -39,7 +39,8 @@ return repo.findById(hotelId).orElseThrow(()-> new ResourceNotFoundException("HO
 	}
 
 	public void deleteHotelById(String hotelId) {
-		
+		//Hotel hotels = repo.findById(hotelId).orElseThrow(()-> new ResourceNotFoundException("HOTEL NOT FOUND TO DELTE BY USING THIS ID IS "+hotelId));
+
 		Hotel hotel = repo.findById(hotelId).orElseThrow(()-> new ResourceNotFoundException("HOTEL NOT FOUND TO DELTE BY USING THIS ID IS "+hotelId));
 		repo.delete(hotel);
 
