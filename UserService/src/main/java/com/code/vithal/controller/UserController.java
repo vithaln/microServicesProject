@@ -20,6 +20,7 @@ import com.code.vithal.services.UserService;
 
 import ch.qos.logback.classic.Logger;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +43,8 @@ public class UserController {
 	int retryCount=1;
 	@GetMapping("{userId}")
 	//@CircuitBreaker(name = "ratingHotelBreaker",fallbackMethod = "ratingHotelFallback")
-	@Retry(name = "ratingHotelService",fallbackMethod = "ratingHotelFallback")
+	//@Retry(name = "ratingHotelService",fallbackMethod = "ratingHotelFallback")
+	@RateLimiter(name = "userRating", fallbackMethod = "ratingHotelFallback")
 	public ResponseEntity<User> getUserById(@PathVariable String userId){
 		
 		log.info("USER CONTROLLER GETUSERBYID METHOD IS CALLED..");

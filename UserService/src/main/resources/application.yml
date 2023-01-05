@@ -59,3 +59,12 @@ resilience4j:
       ratingHotelService:
         max-attempts: 3
         wait-duration: 2s
+        
+        
+        
+  ratelimiter:
+    instances:
+      userRating:
+        limit-refresh-period: 4s
+        limit-for-period: 1
+        timeout-duration: 2s
